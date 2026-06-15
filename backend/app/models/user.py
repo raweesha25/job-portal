@@ -17,6 +17,8 @@ class User(Base):
 
     role = Column(String, default="job_seeker")
 
+    resume_url = Column(String, nullable=True)
+
     applications = relationship(
         "Application",
         back_populates="user"

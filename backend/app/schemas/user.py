@@ -9,3 +9,13 @@ class UserCreate(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
+
+class ResumeUploadResponse(BaseModel):
+    message: str
+    resume_url: str
+
+
+class UserResumeResponse(BaseModel):
+    user_id: int
+    resume_url: str | None
