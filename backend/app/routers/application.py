@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session, joinedload
 
 from app.core.dependencies import get_db, require_roles
@@ -78,7 +78,8 @@ def apply_job(
 
 @router.get("/", response_model=list[ApplicationResponse])
 def get_all_applications(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles(["admin", "recruiter"]))
 ):
     applications = (
         db.query(Application)
@@ -95,8 +96,17 @@ def get_all_applications(
 @router.get("/user/{user_id}", response_model=list[ApplicationResponse])
 def get_user_applications(
     user_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(
+        require_roles(["admin", "recruiter", "job_seeker"])
+    )
 ):
+    if current_user.role == "job_seeker" and current_user.id != user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Job seekers can only view their own applications"
+        )
+
     user = db.query(User).filter(
         User.id == user_id
     ).first()

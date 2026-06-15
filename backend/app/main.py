@@ -9,6 +9,7 @@ from app.models.job import Job
 
 from app.routers.users import router as users_router
 from app.routers.jobs import router as jobs_router
+from app.routers.dashboard import router as dashboard_router
 
 
 Base.metadata.create_all(bind=engine)
@@ -22,6 +23,7 @@ app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(jobs_router)
 app.include_router(application_router)
+app.include_router(dashboard_router)
 
 @app.get("/")
 def root():
